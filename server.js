@@ -5,7 +5,7 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(cors());
 
-let houses = [
+let trainers = [
     [
         {
             "_id": 1,
@@ -68,9 +68,9 @@ let houses = [
 
 
 
-app.get("/api/houses",(req, res)=>{
-    console.log("you got houses");
-    res.send(houses);
+app.get("/api/trainers",(req, res)=>{
+    console.log("you got trainers");
+    res.send(trainers);
 });
 
 app.listen(3005, ()=>{
