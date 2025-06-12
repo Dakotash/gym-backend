@@ -70,7 +70,7 @@ let trainers = [
 
 app.get("/api/trainers",(req, res)=>{
     console.log("you got trainers");
-    res.send(trainers);
+    res.json(trainers);
 });
 
 app.listen(3005, ()=>{
