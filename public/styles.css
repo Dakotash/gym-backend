@@ -1,3 +1,94 @@
-body{
-    background: lightblue;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a0a;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+h1 {
+    color: #00ff00;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-shadow: 0 0 10px #00ff00;
+    border-bottom: 2px solid #00ff00;
+    padding-bottom: 10px;
+}
+
+h1::before {
+    content: ">>> ";
+    color: #ffff00;
+}
+
+
+
+p {
+    color: #cccccc;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.log-entry {
+    color: #cccccc;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+
+
+a {
+    color: #00ff00;
+    text-decoration: none;
+    background: #222;
+    padding: 10px 15px;
+    border: 1px solid #00ff00;
+    border-radius: 3px;
+    display: inline-block;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+a:hover {
+    background: #00ff00;
+    color: #000;
+    box-shadow: 0 0 20px #00ff00;
+    transform: translateY(-2px);
+}
+
+a::before {
+    content: "GET ";
+    color: #ffff00;
+    font-weight: bold;
+}
+
+
+
+
+
+/* Add a blinking cursor effect */
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+body::after {
+    content: "_";
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    color: #00ff00;
+    font-size: 1.2em;
+    animation: blink 1s infinite;
+    
 }
