@@ -1,9 +1,23 @@
-const express =  require("express");
+const express = require("express");
 const cors = require("cors");
+const multer = require("multer");
+const Joi = require("joi");
 const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 app.use(cors());
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "./public/images/");
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    },
+  });
+
+const upload = multer({ storage: storage });
+
 
 let trainers = [
     [
@@ -67,12 +81,48 @@ let trainers = [
 ];
 
 
-
 app.get("/api/trainers",(req, res)=>{
     console.log("you got trainers");
     res.json(trainers);
 });
 
+
+//-------------------------NEW CODE------------------------------------------
+app.post("/api/houses", upload.single("img") ,(req, res)=>{
+    //console.log(req.body);
+    const isValidHouse = validateHouse(req.body);
+    if(isValidHouse.error){
+        console.log("invalid");
+        res.status(400).send(isValidHouse.error.details[0].message);
+        return;
+    }
+
+    const house ={
+        _id:houses.length,
+        name: req.body.name,
+        size: req.body.size
+    }
+
+    if(req.file){
+        house.main_image = req.file.filename;
+    }
+
+    console.log("valid trainer added")
+    res.status(200).send(house);
+});
+
+
+//need requirments both client and server side
+const validateHouse = (house) => {
+    const schema = joi.object({
+        _id: joi.allow(""),
+        name: joi.string().min(3).required(),
+        size: joi.number().required().min(0) 
+    });
+
+    return schema.validate(house);
+};
+
 app.listen(3005, ()=>{
-    console.log("Hey!");
+    console.log("The server is up!");
 });
