@@ -97,7 +97,7 @@ app.post("/api/trainers", upload.single("img"), (req, res) => {
         return;
     }
 
-    const trainers = {
+    const trainersData = {
         _id: trainers.length,
         name: req.body.name,
         price: req.body.price,
@@ -106,11 +106,11 @@ app.post("/api/trainers", upload.single("img"), (req, res) => {
     }
 
     if (req.file) {
-        trainers.main_image = req.file.filename;
+        trainersData.main_image = req.file.filename;
     }
 
     console.log("valid trainer added")
-    res.status(200).send(trainers);
+    res.status(200).send(trainersData);
 });
 
 
