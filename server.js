@@ -119,7 +119,8 @@ const validatetrainers = (trainers) => {
     const schema = joi.object({
         _id: joi.allow(""),
         name: joi.string().min(3).required(),
-        price: joi.number().required().min(0)
+        price: joi.number().required().min(0),
+        description: joi.string().min(3)
     });
 
     return schema.validate(trainers);
