@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const Joi = require("joi");
+const joi = require("joi");
 const app = express();
 app.use(express.static("public"));
 app.use(express.json());
@@ -9,12 +9,12 @@ app.use(cors());
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "./public/images/");
+        cb(null, "./public/images/");
     },
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+        cb(null, file.originalname);
     },
-  });
+});
 
 const upload = multer({ storage: storage });
 
@@ -81,48 +81,50 @@ let trainers = [
 ];
 
 
-app.get("/api/trainers",(req, res)=>{
+app.get("/api/trainers", (req, res) => {
     console.log("you got trainers");
     res.json(trainers);
 });
 
 
 //-------------------------NEW CODE------------------------------------------
-app.post("/api/houses", upload.single("img") ,(req, res)=>{
+app.post("/api/trainers", upload.single("img"), (req, res) => {
     //console.log(req.body);
-    const isValidHouse = validateHouse(req.body);
-    if(isValidHouse.error){
+    const isValidtrainers = validatetrainers(req.body);
+    if (isValidtrainers.error) {
         console.log("invalid");
-        res.status(400).send(isValidHouse.error.details[0].message);
+        res.status(400).send(isValidtrainers.error.details[0].message);
         return;
     }
 
-    const house ={
-        _id:houses.length,
+    const trainers = {
+        _id: trainers.length,
         name: req.body.name,
-        size: req.body.size
+        price: req.body.price,
+        img_name: req.body.img,
+        description: req.body.description
     }
 
-    if(req.file){
-        house.main_image = req.file.filename;
+    if (req.file) {
+        trainers.main_image = req.file.filename;
     }
 
     console.log("valid trainer added")
-    res.status(200).send(house);
+    res.status(200).send(trainers);
 });
 
 
 //need requirments both client and server side
-const validateHouse = (house) => {
+const validatetrainers = (trainers) => {
     const schema = joi.object({
         _id: joi.allow(""),
         name: joi.string().min(3).required(),
-        size: joi.number().required().min(0) 
+        size: joi.number().required().min(0)
     });
 
-    return schema.validate(house);
+    return schema.validate(trainers);
 };
 
-app.listen(3005, ()=>{
+app.listen(3005, () => {
     console.log("The server is up!");
 });
