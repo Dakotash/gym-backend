@@ -3,13 +3,17 @@ const cors = require("cors");
 const multer = require("multer");
 const joi = require("joi");
 const app = express();
+const path = require('path');
+
 app.use(express.static("public"));
 app.use(express.json());
 app.use(cors());
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "./public/images/");
+        const dir = path.join(__dirname, 'public', 'images');
+        cb(null, dir);
+        // cb(null, "./public/images/");
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
