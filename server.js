@@ -113,8 +113,12 @@ app.post("/api/trainers", upload.single("img"), (req, res) => {
         trainersData.main_image = req.file.filename;
     }
 
+    trainers[0].push(trainersData);
+
     console.log("valid trainer added")
-    res.status(200).send(trainersData);
+
+    console.log(trainers, "trainers")
+    res.status(200).send(trainers);
 });
 
 
