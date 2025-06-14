@@ -11,9 +11,9 @@ app.use(cors());
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const dir = path.join(__dirname, 'public', 'images');
-        cb(null, dir);
+        // const dir = path.join(__dirname, 'public', 'images');
         // cb(null, "./public/images/");
+        cb(null, "./public/images/");
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
@@ -123,7 +123,7 @@ const validatetrainers = (trainers) => {
     const schema = joi.object({
         _id: joi.allow(""),
         name: joi.string().min(3).required(),
-        price: joi.number().required().min(0),
+        price: joi.string().required(),
         description: joi.string().min(3)
     });
 
