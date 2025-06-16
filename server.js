@@ -22,8 +22,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
-let trainers = [
+// trainers data
+const trainers = [
         {
             _id: 1,
             name: "Arnold Schwarzenegger",
