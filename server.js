@@ -24,7 +24,6 @@ const upload = multer({ storage: storage });
 
 
 let trainers = [
-    [
         {
             _id: 1,
             name: "Arnold Schwarzenegger",
@@ -81,7 +80,6 @@ let trainers = [
             img_name: "images/frank-zane.png",
             description: "Three-time Mr. Olympia known for his aesthetic physique and scientific approach to training. Frank specializes in body symmetry, proportion, and lean muscle development. Perfect for clients focused on achieving a balanced, aesthetic physique rather than just size."
         }
-    ]
 ];
 
 
