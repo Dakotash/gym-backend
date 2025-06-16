@@ -100,23 +100,23 @@ app.post("/api/trainers", upload.single("img"), (req, res) => {
     }
 
     const trainersData = {
-        _id: trainers.length,
+        _id: trainers.length + 1,
         name: req.body.name,
         price: req.body.price,
-        img_name: req.body.img,
+        img_name: req.file ? `images/${req.file.filename}` : req.body.img || null,
         description: req.body.description
     }
 
-    if (req.file) {
-        trainersData.main_image = req.file.filename;
-    }
+    // if (req.file) {
+    //     trainersData.img_name = req.file.filename;
+    // }
 
     trainers.push(trainersData);
 
     console.log("valid trainer added")
 
     console.log(trainers, "trainers")
-    res.status(200).send(trainers);
+    res.status(200).send(trainersData);
 });
 
 
