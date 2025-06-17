@@ -89,7 +89,6 @@ app.get("/api/trainers", (req, res) => {
 });
 
 
-//-------------------------NEW CODE------------------------------------------
 app.post("/api/trainers", upload.single("img"), (req, res) => {
     //console.log(req.body);
     const isValidtrainers = validatetrainers(req.body);
@@ -119,6 +118,48 @@ app.post("/api/trainers", upload.single("img"), (req, res) => {
     res.status(200).send(trainersData);
 });
 
+
+//--------------------------new code------------------------------------------------------------------------------
+app.put("/api/trainers/:id", upload.single("img"), (req, res)=>{
+    //console.log(`You are trying to edit ${req.params.id}`);
+    //console.log(req.body);
+
+    const trainer = trainers.find((t)=>t._id===parseInt(req.params.id));
+
+    const isValidUpdate = validateTrainer(req.body);
+
+    if(isValidUpdate.error){
+        console.log("Invalid Info");
+        res.status(400).send(isValidUpdate.error.details[0].message);
+        return;
+    }
+
+    trainer.name = req.body.name;
+    trainer.description = req.body.description;
+    trainer.size = req.body.size;
+    trainer.bathrooms = req.body.bathrooms;
+    trainer.bedrooms = req.body.bedrooms;
+
+    if(req.file){
+        trainer.main_image = req.file.filename;
+    }
+
+    res.status(200).send(trainer);
+
+});
+
+app.delete("/api/trainers/:id", (req,res)=>{
+    const trainer = trainers.find((t)=>t._id===parseInt(req.params.id));
+    
+    if(!trainer) {
+        res.status(404).send("The trainer you wanted to delete is unavailable");
+        return;
+    }
+
+    const index = trainers.indexOf(trainer);
+    trainers.splice(index, 1);
+    res.status(200).send(trainer);
+});
 
 //need requirments both client and server side
 const validatetrainers = (trainers) => {
