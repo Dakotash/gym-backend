@@ -41,6 +41,7 @@ mongoose
   .connect("mongodb+srv://dakotash:MongoDBpassword@cluster0.iyg4h6k.mongodb.net/test")
   .then(async() => {
     console.log("Connected to mongodb...")
+        await Trainer.deleteMany({})
         await Trainer.insertMany(data) 
         console.log("seeded the data")   
     })
