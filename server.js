@@ -4,6 +4,7 @@ const multer = require("multer");
 const joi = require("joi");
 const app = express();
 const path = require('path');
+const data = require("./trainers-seed.json")
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -22,7 +23,46 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// trainers data
+
+//-----------------MongoDB---------------------------------------------------------------
+const mongoose = require("mongoose");
+
+const trainerSchema = new mongoose.Schema({
+  name: String,
+  price: String,
+  img_name: String,
+  description: String
+});
+
+const Trainer = mongoose.model("Trainer", trainerSchema);
+
+//testdb is name of database, it will automatically make it
+mongoose
+  .connect("mongodb+srv://dakotash:MongoDBpassword@cluster0.iyg4h6k.mongodb.net/test")
+  .then(async() => {
+    console.log("Connected to mongodb...")
+        await Trainer.insertMany(data) 
+        console.log("seeded the data")   
+    })
+  .catch((err) => console.error("could not connect ot mongodb...", err));
+
+async function createMessage() {
+  const result = await message.save();
+  console.log(result);
+}
+
+//this creates a Message class in our app
+// const Message = mongoose.model("Message", schema);
+// const message = new Message({
+//   name: "Hello World",
+// });
+
+// createMessage();
+//------------------------------------------------------------------------------------------
+
+
+// trainers data  delete array and put it in mongoose
+/*
 const trainers = [
         {
             _id: 1,
@@ -81,15 +121,17 @@ const trainers = [
             description: "Three-time Mr. Olympia known for his aesthetic physique and scientific approach to training. Frank specializes in body symmetry, proportion, and lean muscle development. Perfect for clients focused on achieving a balanced, aesthetic physique rather than just size."
         }
 ];
+*/
 
-
-app.get("/api/trainers", (req, res) => {
+app.get("/api/trainers",async(req, res) => {
+    console.log("testing here");
+    const trainers = await Trainer.find()
     console.log("you got trainers");
     res.json(trainers);
 });
 
 
-app.post("/api/trainers", upload.single("img"), (req, res) => {
+app.post("/api/trainers", upload.single("img"), async(req, res) => {
     //console.log(req.body);
     const isValidtrainers = validatetrainers(req.body);
     if (isValidtrainers.error) {
@@ -98,35 +140,29 @@ app.post("/api/trainers", upload.single("img"), (req, res) => {
         return;
     }
 
-    const trainersData = {
-        _id: trainers.length + 1,
+    const trainersData = new Trainer({
+        // _id: trainers.length + 1,
         name: req.body.name,
         price: req.body.price,
         img_name: req.file ? `images/${req.file.filename}` : req.body.img || null,
         description: req.body.description
-    }
+    });
 
-    // if (req.file) {
-    //     trainersData.img_name = req.file.filename;
-    // }
-
-    trainers.push(trainersData);
+    const newTrainer = await trainersData.save()
+    // trainers.push(trainersData);
 
     console.log("valid trainer added")
 
-    console.log(trainers, "trainers")
-    res.status(200).send(trainersData);
+    // console.log(trainers, "trainers")
+    res.status(200).send(newTrainer);
 });
 
 
-//--------------------------new code------------------------------------------------------------------------------
-app.put("/api/trainers/:id", upload.single("img"), (req, res)=>{
-    //console.log(`You are trying to edit ${req.params.id}`);
-    //console.log(req.body);
+app.put("/api/trainers/:id", upload.single("img"), async(req, res)=>{
+  
+    // const trainer = trainers.find((t)=>t._id===parseInt(req.params.id));
 
-    const trainer = trainers.find((t)=>t._id===parseInt(req.params.id));
-
-    const isValidUpdate = validateTrainer(req.body);
+    const isValidUpdate = validatetrainers(req.body);
 
     if(isValidUpdate.error){
         console.log("Invalid Info");
@@ -134,32 +170,50 @@ app.put("/api/trainers/:id", upload.single("img"), (req, res)=>{
         return;
     }
 
-    trainer.name = req.body.name;
-    trainer.description = req.body.description;
-    trainer.size = req.body.size;
-    trainer.bathrooms = req.body.bathrooms;
-    trainer.bedrooms = req.body.bedrooms;
-
-    if(req.file){
-        trainer.main_image = req.file.filename;
+    const fieldsToUpdate ={
+    name : req.body.name,
+    description : req.body.description,
+    price : req.body.price,
+    // img_name : req.file ? `images/${req.file.filename}` : req.body.img || null,
     }
 
-    res.status(200).send(trainer);
+    if(req.file){
+        fieldsToUpdate.img_name = `images/${req.file.filename}`;
+    }
+  
+    const success = await Trainer.updateOne({_id:req.params.id}, fieldsToUpdate);
 
-});
-
-app.delete("/api/trainers/:id", (req,res)=>{
-    const trainer = trainers.find((t)=>t._id===parseInt(req.params.id));
-    
-    if(!trainer) {
-        res.status(404).send("The trainer you wanted to delete is unavailable");
+    if(!success){
+        res.status(404).send("We Can't locate the trainer")
         return;
     }
 
-    const index = trainers.indexOf(trainer);
-    trainers.splice(index, 1);
+    const trainer = await Trainer.findById(req.params.id);
+    res.status(200).send(trainer);
+
+});
+
+
+app.delete("/api/trainers/:id",async (req,res)=>{
+    const trainer = await Trainer.findByIdAndDelete(req.params.id);
+
+    if(!trainer){
+        res.status(404).send("We can't find the trainer to delete");
+        return;
+    }
+
+    // const trainer = trainers.find((t)=>t._id===parseInt(req.params.id));
+    
+    // if(!trainer) {
+    //     res.status(404).send("The trainer you wanted to delete is unavailable");
+    //     return;
+    // }
+
+    // const index = trainers.indexOf(trainer);
+    // trainers.splice(index, 1);
     res.status(200).send(trainer);
 });
+
 
 //need requirments both client and server side
 const validatetrainers = (trainers) => {
@@ -172,6 +226,7 @@ const validatetrainers = (trainers) => {
 
     return schema.validate(trainers);
 };
+
 
 app.listen(3005, () => {
     console.log("The server is up!");
